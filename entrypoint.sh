@@ -66,7 +66,7 @@ fi
 
 
 #============== TMP DELETE IT ===================
-generate_configsl
+generate_configs
 configuration_main_cf
 # generate_opendkim_key
 #============== TMP DELETE IT ===================
