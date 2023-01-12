@@ -1,0 +1,5 @@
+user     = ${EMAIL_DB_USER}
+password = ${EMAIL_DB_PASSWORD}
+hosts    = ${EMAIL_DB_HOST}
+dbname   = ${EMAIL_DB_NAME}
+query = SELECT quota FROM mailbox WHERE username='%s' AND active = '1'
