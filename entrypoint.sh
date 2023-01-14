@@ -52,7 +52,7 @@ generate_opendkim_key () {
     echo "========================================"
     chmod 600 /etc/opendkim/keys/${EMAIL_DOMAIN}/mail.private
     echo "*.${EMAIL_DOMAIN}" >> /etc/opendkim/TrustedHosts
-    echo "mail._domainkey.${EMAIL_DOMAIN} ${EMAIL_DOMAIN}:mail:/etc/opendkim/${EMAIL_DOMAIN}/mail.private" >> /etc/opendkim/KeyTable
+    echo "mail._domainkey.${EMAIL_DOMAIN} ${EMAIL_DOMAIN}:mail:/etc/opendkim/keys/${EMAIL_DOMAIN}/mail.private" >> /etc/opendkim/KeyTable
     echo "*@${EMAIL_DOMAIN} mail._domainkey.${EMAIL_DOMAIN}" >> /etc/opendkim/SigningTable
 }
 
