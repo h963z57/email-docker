@@ -50,6 +50,7 @@ generate_opendkim_key () {
     echo "========================================"
     cat "/etc/opendkim/keys/${EMAIL_DOMAIN}/mail.txt"
     echo "========================================"
+    chown opendkim:opendkim /etc/opendkim/keys/${EMAIL_DOMAIN}/mail.private
     chmod 600 /etc/opendkim/keys/${EMAIL_DOMAIN}/mail.private
     echo "*.${EMAIL_DOMAIN}" >> /etc/opendkim/TrustedHosts
     echo "mail._domainkey.${EMAIL_DOMAIN} ${EMAIL_DOMAIN}:mail:/etc/opendkim/keys/${EMAIL_DOMAIN}/mail.private" >> /etc/opendkim/KeyTable
