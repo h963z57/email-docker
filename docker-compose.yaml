@@ -1,0 +1,20 @@
+version: "3.9"
+services:
+  email: 
+    build: .
+    environment:
+      - EMAIL_DB_USER=test
+      - EMAIL_DB_PASSWORD=test
+      - EMAIL_DB_HOST=test
+      - EMAIL_DB_NAME=test
+      - EMAIL_HOSTNAME=mail.h963z57.com
+      - EMAIL_NETWORKS_127.0.0.0/8
+      - EMAIL_DOMAINS=test.loc ex.loc
+    secrets:
+      - source: ex.loc
+    # volumes:
+    #   - ./mail.private:/run/secrets/ex.loc
+
+secrets:
+  ex.loc:
+    external: true

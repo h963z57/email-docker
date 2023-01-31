@@ -50,6 +50,21 @@ generate_opendkim_key () {
     echo "========================================"
     cat "/etc/opendkim/keys/${EMAIL_DOMAIN}/mail.txt"
     echo "========================================"
+    echo "DKIM Secret:"
+    echo "========================================"
+    cat "/etc/opendkim/keys/${EMAIL_DOMAIN}/mail.private"
+    echo "========================================"
+    chown opendkim:opendkim /etc/opendkim/keys/${EMAIL_DOMAIN}/mail.private
+    chmod 600 /etc/opendkim/keys/${EMAIL_DOMAIN}/mail.private
+    echo "*.${EMAIL_DOMAIN}" >> /etc/opendkim/TrustedHosts
+    echo "mail._domainkey.${EMAIL_DOMAIN} ${EMAIL_DOMAIN}:mail:/etc/opendkim/keys/${EMAIL_DOMAIN}/mail.private" >> /etc/opendkim/KeyTable
+    echo "*@${EMAIL_DOMAIN} mail._domainkey.${EMAIL_DOMAIN}" >> /etc/opendkim/SigningTable
+}
+
+copy_exists_opendkim_key () {
+    echo "Start opendkim attach"
+    mkdir -p /etc/opendkim/keys/${EMAIL_DOMAIN}
+    cp /run/secrets/${EMAIL_DOMAIN} /etc/opendkim/keys/${EMAIL_DOMAIN}/mail.private
     chown opendkim:opendkim /etc/opendkim/keys/${EMAIL_DOMAIN}/mail.private
     chmod 600 /etc/opendkim/keys/${EMAIL_DOMAIN}/mail.private
     echo "*.${EMAIL_DOMAIN}" >> /etc/opendkim/TrustedHosts
@@ -66,13 +81,9 @@ else
 fi
 
 
-#============== TMP DELETE IT ===================
+#================ Configure services ===================
 generate_configs
 configuration_main_cf
-# generate_opendkim_key
-#============== TMP DELETE IT ===================
-
-
 
 echo "Setup files priveleges"
 chown -R vmail:dovecot /etc/dovecot
@@ -82,36 +93,20 @@ echo "Create conf files opendkim"
 touch /etc/opendkim/SigningTable
 touch /etc/opendkim/KeyTable
 
-
-#================= DEV AREA =======================
-
-
-
-
-
-
-
-
-if [ -d "/etc/opendkim/keys" ]
-then
-	if [ "$(ls -A /etc/opendkim/keys)" ]; then
-     echo "Take action /etc/opendkim/keys is not Empty"
-	else
-        for EMAIL_DOMAIN in $EMAIL_DOMAINS
-        do
+#==== Generate or import private opendkim key ===========
+for EMAIL_DOMAIN in $EMAIL_DOMAINS
+    do
+        if [ -f "/run/secrets/$EMAIL_DOMAIN" ]; then
+            echo "Success import exists private key for domain $EMAIL_DOMAIN"
+            copy_exists_opendkim_key
+        else 
+            echo "Success generate new key for domain $EMAIL_DOMAIN"
+            echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+            echo "#   DO NOT FORGET USE KEY AS SECRET      #"
+            echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
             generate_opendkim_key
-        done
-	fi
-else
-	echo "Directory /etc/opendkim/keys not found."
-    exit 0
-fi
-
-
-#================= DEV AREA END ====================
-
-
-
+        fi
+     done
 
 #===================== Start service ====================
 
@@ -120,7 +115,7 @@ service rsyslog start
 service postfix start
 service dovecot start
 service opendkim start
-# Enable log
+#====================== Enable log ======================
 touch /var/log/mail.err
 echo "Log started..."
 tail -f /var/log/mail.err
