@@ -1,6 +1,6 @@
 # Email-docker
 
-> Don't forget create postfixadmin and configure database befor use this container
+> Don't forget create and configure database for postfixadmin befor use this container.
 
 # For run container (for create DKIM)
 
