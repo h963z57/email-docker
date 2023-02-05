@@ -1,4 +1,7 @@
 # Email-docker
+
+> Don't forget create postfixadmin and configure database befor use this container
+
 # For run container (for create DKIM)
 
         docker run -d -p 143:143 -p 25:25 -p 587:587 \
