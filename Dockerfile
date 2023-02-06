@@ -37,24 +37,10 @@ RUN useradd -r -u 150 -g mail -d /var/vmail -s /sbin/nologin -c "Virtual Mail Us
 
 COPY /source/templates templates/
 COPY /source/files/master.cf /etc/postfix/master.cf
-
 COPY /source/files/10-*.conf /etc/dovecot/conf.d/
-
-# COPY /templates/10-auth.conf /etc/dovecot/conf.d/10_auth.conf
-# COPY /templates/10-mail.conf /etc/dovecot/conf.d/10-mail.conf
-# COPY /templates/10-master.conf /etc/dovecot/conf.d/10-master.conf
-# COPY /templates/10-ssl.conf /etc/dovecot/conf.d/10-ssl.conf
-
 COPY /source/files/opendkim /etc/default/opendkim
 COPY /source/files/opendkim.conf /etc/opendkim.conf
 COPY /source/files/TrustedHosts /etc/opendkim/TrustedHosts
-
-# ==================== TMP REMOVE IT ===========================
-# COPY /source/h963z57.com/fullchain.pem /mnt/SSL/fullchain.pem
-# COPY /source/h963z57.com/privkey.pem /mnt/SSL/privkey.pem
-
-#COPY /source/h963z57.com /etc/opendkim/keys/h963z57.com
-# ==================== TMP REMOVE IT ===========================
 
 COPY ./entrypoint.sh /entrypoint.sh
 RUN chmod a+x /entrypoint.sh
