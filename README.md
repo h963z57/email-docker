@@ -30,7 +30,7 @@
 
         email-docker:
             restart: always
-            image: h963z57/email-docker:master
+            image: h963z57/email-docker:latest
             ports:
                 - "143:143"
                 - "25:25"
