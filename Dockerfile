@@ -5,7 +5,7 @@ FROM debian:latest
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive \   
         apt-get install -y \
-            rsyslog \
+            inetutils-syslogd \
             postfix-mysql \
             dovecot-mysql \ 
             dovecot-imapd \
@@ -14,13 +14,7 @@ RUN apt-get update \
             opendkim-tools \
             wget \
             gettext-base \
-            mailutils
-
-#================== Download and confgigure mc ============
-
-RUN wget https://dl.min.io/client/mc/release/linux-amd64/mc \
-    && chmod +x mc \
-    && mv mc /usr/bin/
+            postfix-policyd-spf-python
 
 #================== Confgigure mail user and dir ==========
 
@@ -32,7 +26,9 @@ RUN useradd -r -u 150 -g mail -d /var/vmail -s /sbin/nologin -c "Virtual Mail Us
     && mkdir -p /etc/postfix/sql \
     && mkdir -p /etc/opendkim/keys \
     && chown opendkim:opendkim /etc/opendkim \
-    && chmod 750 /etc/opendkim
+    && chmod 750 /etc/opendkim \
+    && touch /etc/postfix/sender_access \
+    && postmap /etc/postfix/sender_access
 
 
 COPY /source/templates templates/

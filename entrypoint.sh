@@ -30,7 +30,12 @@ configuration_main_cf () {
     postconf -e "smtpd_sasl_type = dovecot"
     postconf -e "smtpd_sasl_path = private/auth"
     postconf -e "smtpd_sasl_auth_enable = yes"
-    postconf -e "smtpd_recipient_restrictions = permit_sasl_authenticated, permit_mynetworks, reject_unauth_destination"
+    postconf -e "policy-spf_time_limit = 3600s"
+    postconf -e "smtpd_client_restrictions = permit_mynetworks permit_sasl_authenticated reject_unauth_pipelining permit"
+    postconf -e "smtpd_helo_restrictions = permit"
+    postconf -e "smtpd_sender_restrictions = permit_mynetworks permit_sasl_authenticated reject_non_fqdn_sender reject_unknown_sender_domain check_sender_access hash:/etc/postfix/sender_access permit"
+    postconf -e "smtpd_relay_restrictions = permit_mynetworks permit_sasl_authenticated defer_unauth_destination"
+    postconf -e "smtpd_recipient_restrictions = permit_mynetworks permit_sasl_authenticated reject_non_fqdn_recipient reject_unauth_destination reject_unverified_recipient check_policy_service unix:private/policy-spf reject_unknown_client_hostname reject_invalid_helo_hostname reject_non_fqdn_helo_hostname reject_unknown_helo_hostname permit"
     postconf -e "virtual_transport = lmtp:unix:private/dovecot-lmtp"
     postconf -e "virtual_mailbox_domains = proxy:mysql:/etc/postfix/sql/mysql_virtual_domains_maps.cf"
     postconf -e "virtual_alias_maps = proxy:mysql:/etc/postfix/sql/mysql_virtual_alias_maps.cf, proxy:mysql:/etc/postfix/sql/mysql_virtual_alias_domain_maps.cf, proxy:mysql:/etc/postfix/sql/mysql_virtual_alias_domain_catchall_maps.cf"
@@ -93,9 +98,11 @@ echo "Create conf files opendkim"
 touch /etc/opendkim/SigningTable
 touch /etc/opendkim/KeyTable
 
-#==== Generate or import private opendkim key ===========
+#= Generate or import private opendkim key and configure sender access =
 for EMAIL_DOMAIN in $EMAIL_DOMAINS
-    do
+    do  
+        echo "Configure sender access for domain $EMAIL_DOMAIN"
+        echo "$EMAIL_DOMAIN REJECT Relay from $EMAIL_DOMAIN are denied" >> /etc/postfix/sender_access
         if [ -f "/run/secrets/$EMAIL_DOMAIN" ]; then
             echo "Success import exists private key for domain $EMAIL_DOMAIN"
             copy_exists_opendkim_key
@@ -108,14 +115,18 @@ for EMAIL_DOMAIN in $EMAIL_DOMAINS
         fi
      done
 
+
 #===================== Start service ====================
 
 echo "Start postfix dovecot opendkim"
-service rsyslog start
+service inetutils-syslogd start
 service postfix start
 service dovecot start
 service opendkim start
 #====================== Enable log ======================
 touch /var/log/mail.err
+touch /var/log/mail.info
+touch /var/log/mail.log
+touch /var/log/mail.warn
 echo "Log started..."
-tail -f /var/log/mail.err
+tail -f /var/log/mail.err -f /var/log/mail.warn -f /var/log/mail.log -f /var/log/mail.info
