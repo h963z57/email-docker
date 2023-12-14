@@ -27,8 +27,7 @@ RUN useradd -r -u 150 -g mail -d /var/vmail -s /sbin/nologin -c "Virtual Mail Us
     && mkdir -p /etc/opendkim/keys \
     && chown opendkim:opendkim /etc/opendkim \
     && chmod 750 /etc/opendkim \
-    && touch /etc/postfix/sender_access \
-    && postmap /etc/postfix/sender_access
+    && touch /etc/postfix/sender_access
 
 
 COPY /source/templates templates/

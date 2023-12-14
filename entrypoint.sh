@@ -18,7 +18,7 @@ generate_configs () {
 
 configuration_main_cf () {
     echo "Confgiguration main.cf"
-
+    postconf -e "smtp_helo_name = ${EMAIL_HELO_HOSTNAME}"
     postconf -e "myhostname = ${EMAIL_HOSTNAME}"
     postconf -e "mydestination = localhost"
     postconf -e "mynetworks = ${EMAIL_NETWORKS}" 
@@ -78,7 +78,7 @@ copy_exists_opendkim_key () {
 }
 
 #==================== Check env exists ============================
-if [[ -z "${EMAIL_DOMAINS}" && "${EMAIL_DB_USER}" && "${EMAIL_DB_PASSWORD}" && "${EMAIL_DB_HOST}" && "${EMAIL_DB_NAME}" && "${EMAIL_HOSTNAME}" ]]; then
+if [[ -z "${EMAIL_DOMAINS}" && "${EMAIL_DB_USER}" && "${EMAIL_DB_PASSWORD}" && "${EMAIL_DB_HOST}" && "${EMAIL_DB_NAME}" && "${EMAIL_HOSTNAME}" && "${EMAIL_HELO_HOSTNAME}" ]]; then
   echo "No one or more env"
   exit 0
 else
@@ -117,9 +117,9 @@ for EMAIL_DOMAIN in $EMAIL_DOMAINS
 
 
 #===================== Start service ====================
-
-echo "Start postfix dovecot opendkim"
+postmap /etc/postfix/sender_access
 service inetutils-syslogd start
+echo "Start postfix dovecot opendkim"
 service postfix start
 service dovecot start
 service opendkim start
