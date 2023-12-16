@@ -10,6 +10,7 @@
         --env EMAIL_DB_HOST=database_host \
         --env EMAIL_DB_NAME=db_name \
         --evn EMAIL_HOSTNAME=mail.example.com \
+        --env EMAIL_HELO_HOSTNAME=emample.com \
         --env EMAIL_NETWORKS_127.0.0.0/8 \
         --evn EMAIL_DOMAINS=example_1.com example_2.com example_9999.com \
         h963z57/email-docker
@@ -41,6 +42,7 @@
                 - EMAIL_DB_HOST=
                 - EMAIL_DB_NAME=
                 - EMAIL_HOSTNAME=mail.example.com
+                - EMAIL_HELO_HOSTNAME=emample.com
                 - EMAIL_NETWORKS=127.0.0.0/8
                 - EMAIL_DOMAINS=example.com example1.com example2.com
             links:
@@ -74,6 +76,7 @@
                     - EMAIL_DB_HOST=
                     - EMAIL_DB_NAME=
                     - EMAIL_HOSTNAME=mail.exmple.com
+                    - EMAIL_HELO_HOSTNAME=emample.com
                     - EMAIL_NETWORKS=127.0.0.0/8
                     - EMAIL_DOMAINS=example.com example1.com example2.com
                 volumes:
