@@ -77,14 +77,36 @@ copy_exists_opendkim_key () {
     echo "*@${EMAIL_DOMAIN} mail._domainkey.${EMAIL_DOMAIN}" >> /etc/opendkim/SigningTable
 }
 
+configure_relay () {
+    echo "Start configuration relay smtp"
+    postconf -e "relayhost = [${EMAIL_RELAY_HOST}]:${EMAIL_RELAY_PORT}"
+    postconf -e "smtp_sasl_auth_enable = yes"
+    postconf -e "smtp_sasl_security_options = noanonymous"
+    postconf -e "smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd"
+    postconf -e "smtp_use_tls = yes"
+    postconf -e "smtp_tls_security_level = encrypt"
+    postconf -e "smtp_tls_note_starttls_offer = yes"
+
+    touch /etc/postfix/sasl_passwd
+    echo "[${EMAIL_RELAY_HOST}]:${EMAIL_RELAY_PORT} ${EMAIL_RELAY_ACCESS_KEY}:${EMAIL_RELAY_SMTP_SECRET_KEY}" >> /etc/postfix/sasl_passwd 
+    chmod 600 /etc/postfix/sasl_passwd
+    postmap /etc/postfix/sasl_passwd
+}
+
 #==================== Check env exists ============================
-if [[ -z "${EMAIL_DOMAINS}" && "${EMAIL_DB_USER}" && "${EMAIL_DB_PASSWORD}" && "${EMAIL_DB_HOST}" && "${EMAIL_DB_NAME}" && "${EMAIL_HOSTNAME}" && "${EMAIL_HELO_HOSTNAME}" ]]; then
+if [[ -z "${EMAIL_DOMAINS}" || -z "${EMAIL_DB_USER}" || -z "${EMAIL_DB_PASSWORD}" || -z "${EMAIL_DB_HOST}" || -z "${EMAIL_DB_NAME}" || -z "${EMAIL_HOSTNAME}" || -z "${EMAIL_HELO_HOSTNAME}" ]]; then
   echo "No one or more env"
   exit 0
 else
   echo "All env is exists"
 fi
 
+#====== Check relay env if present start configuration ============
+if [[ -z "${EMAIL_RELAY_HOST}" ]] || [[ -z "${EMAIL_RELAY_PORT}" ]] || [[ -z "${EMAIL_RELAY_ACCESS_KEY}" ]] || [[ -z "${EMAIL_RELAY_SMTP_SECRET_KEY}" ]]; then
+  echo "Relay configuration skip"
+else
+  configure_relay
+fi
 
 #================ Configure services ===================
 generate_configs
