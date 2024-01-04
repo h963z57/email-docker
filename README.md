@@ -45,6 +45,20 @@
                 - EMAIL_HELO_HOSTNAME=emample.com
                 - EMAIL_NETWORKS=127.0.0.0/8
                 - EMAIL_DOMAINS=example.com example1.com example2.com
+                - EMAIL_RELAY_HOST=relay.example.com
+                - EMAIL_RELAY_PORT=587
+                - EMAIL_RELAY_ACCESS_KEY=ACCESS_KEY
+                - EMAIL_RELAY_SMTP_SECRET_KEY=SECRET_SMTP_KEY
+                
+                # EXPERIMENTRAL NOT WORIKING WITH DOCKER SWARM
+                # - EMAIL_S3_ACCESS_KEY=
+                # - EMAIL_S3_SECRET_KEY=
+                # - EMAIL_S3_BUCKET_NAME=
+            privileged: true
+            devices:
+                - /dev/fuse
+            cap_add:
+                - SYS_ADMIN
             links:
                 - "db"
             volumes:
