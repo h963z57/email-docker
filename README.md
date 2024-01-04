@@ -13,6 +13,10 @@
         --env EMAIL_HELO_HOSTNAME=emample.com \
         --env EMAIL_NETWORKS_127.0.0.0/8 \
         --evn EMAIL_DOMAINS=example_1.com example_2.com example_9999.com \
+        --evn EMAIL_RELAY_HOST=relay.example.com \
+        --evn EMAIL_RELAY_PORT=587 \
+        --evn EMAIL_RELAY_ACCESS_KEY=ACCESS_KEY \
+        --evn EMAIL_RELAY_SMTP_SECRET_KEY=SECRET_SMTP_KEY \
         h963z57/email-docker
 
 # docker-compose file
