@@ -93,14 +93,9 @@ configure_relay () {
     postmap /etc/postfix/sasl_passwd
 }
 
-configure_s3 () {
-    echo "Start configuration S3"
-    touch /etc/passwd-s3fs
-    echo "${EMAIL_S3_ACCESS_KEY}:${EMAIL_S3_SECRET_KEY}" > /etc/passwd-s3fs
-    chmod 600 /etc/passwd-s3fs
-    echo user_allow_other >> /etc/fuse.conf
-    s3fs ${EMAIL_S3_BUCKET_NAME} /var/vmail -o allow_other -o use_cache=/tmp -o nonempty
-}
+# configure_s3 () {
+#     echo "Start configuration S3"
+# }
 
 #==================== Check env exists ============================
 if [[ -z "${EMAIL_DOMAINS}" || -z "${EMAIL_DB_USER}" || -z "${EMAIL_DB_PASSWORD}" || -z "${EMAIL_DB_HOST}" || -z "${EMAIL_DB_NAME}" || -z "${EMAIL_HOSTNAME}" || -z "${EMAIL_HELO_HOSTNAME}" ]]; then
@@ -117,11 +112,11 @@ else
   configure_relay
 fi
 
-if [[ -z "${EMAIL_S3_ACCESS_KEY}" ]] || [[ -z "${EMAIL_S3_SECRET_KEY}" ]] || [[ -z "${EMAIL_S3_BUCKET_NAME}" ]] ; then
-  echo "S3 configuration skip"
-else
-  configure_s3
-fi
+# if [[ -z "${EMAIL_S3_ACCESS_KEY}" ]] || [[ -z "${EMAIL_S3_SECRET_KEY}" ]] || [[ -z "${EMAIL_S3_BUCKET_NAME}" ]] || [[ -z "${EMAIL_S3_BUCKET_ENDPOINT}" ]] ; then
+#   echo "S3 configuration skip"
+# else
+#   configure_s3
+# fi
 
 
 #================ Configure services ===================

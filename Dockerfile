@@ -14,9 +14,7 @@ RUN apt-get update \
             opendkim-tools \
             wget \
             gettext-base \
-            postfix-policyd-spf-python \
-            s3fs \
-            fuse 
+            postfix-policyd-spf-python
 
 #================== Confgigure mail user and dir ==========
 

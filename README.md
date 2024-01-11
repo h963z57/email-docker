@@ -54,7 +54,7 @@
                 - EMAIL_RELAY_ACCESS_KEY=ACCESS_KEY
                 - EMAIL_RELAY_SMTP_SECRET_KEY=SECRET_SMTP_KEY
                 
-                # EXPERIMENTRAL NOT WORIKING WITH DOCKER SWARM
+                # REMOVED
                 # - EMAIL_S3_ACCESS_KEY=
                 # - EMAIL_S3_SECRET_KEY=
                 # - EMAIL_S3_BUCKET_NAME=
