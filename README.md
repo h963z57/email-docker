@@ -5,6 +5,7 @@
 # For run container (for create DKIM)
 
         docker run -d -p 143:143 -p 25:25 -p 587:587 \
+        --env EMAIL_DB_DRIVER=pgsql \ #mysql
         --env EMAIL_DB_USER=username \
         --env EMAIL_DB_PASSWORD=password \
         --env EMAIL_DB_HOST=database_host \
@@ -41,6 +42,7 @@
                 - "25:25"
                 - "587:587"
             environment:
+                - EMAIL_DB_DRIVER=pgsql #mysql
                 - EMAIL_DB_USER=
                 - EMAIL_DB_PASSWORD=
                 - EMAIL_DB_HOST=
@@ -53,16 +55,6 @@
                 - EMAIL_RELAY_PORT=587
                 - EMAIL_RELAY_ACCESS_KEY=ACCESS_KEY
                 - EMAIL_RELAY_SMTP_SECRET_KEY=SECRET_SMTP_KEY
-                
-                # REMOVED
-                # - EMAIL_S3_ACCESS_KEY=
-                # - EMAIL_S3_SECRET_KEY=
-                # - EMAIL_S3_BUCKET_NAME=
-            privileged: true
-            devices:
-                - /dev/fuse
-            cap_add:
-                - SYS_ADMIN
             links:
                 - "db"
             volumes:
@@ -89,6 +81,7 @@
                     - "25:25"
                     - "587:587"
                 environment:
+                    - EMAIL_DB_DRIVER=pgsql #mysql
                     - EMAIL_DB_USER=
                     - EMAIL_DB_PASSWORD=
                     - EMAIL_DB_HOST=
@@ -97,6 +90,10 @@
                     - EMAIL_HELO_HOSTNAME=emample.com
                     - EMAIL_NETWORKS=127.0.0.0/8
                     - EMAIL_DOMAINS=example.com example1.com example2.com
+                    - EMAIL_RELAY_HOST=relay.example.com
+                    - EMAIL_RELAY_PORT=587
+                    - EMAIL_RELAY_ACCESS_KEY=ACCESS_KEY
+                    - EMAIL_RELAY_SMTP_SECRET_KEY=SECRET_SMTP_KEY
                 volumes:
                     - type: bind
                     source: /var/vmail

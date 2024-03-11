@@ -5,15 +5,15 @@
 generate_configs () {
     echo "Generating postfix and dovecot configuration for ${EMAIL_DOMAIN}"
 
-    envsubst '\$EMAIL_DB_USER \$EMAIL_DB_PASSWORD \$EMAIL_DB_HOST \$EMAIL_DB_NAME' < /templates/mysql_virtual_alias_maps.cf.j2        > /etc/postfix/sql/mysql_virtual_alias_maps.cf
-    envsubst '\$EMAIL_DB_USER \$EMAIL_DB_PASSWORD \$EMAIL_DB_HOST \$EMAIL_DB_NAME' < /templates/mysql_virtual_domains_maps.cf.j2      > /etc/postfix/sql/mysql_virtual_domains_maps.cf
-    envsubst '\$EMAIL_DB_USER \$EMAIL_DB_PASSWORD \$EMAIL_DB_HOST \$EMAIL_DB_NAME' < /templates/mysql_virtual_mailbox_maps.cf.j2      > /etc/postfix/sql/mysql_virtual_mailbox_maps.cf
-    envsubst '\$EMAIL_DB_USER \$EMAIL_DB_PASSWORD \$EMAIL_DB_HOST \$EMAIL_DB_NAME' < /templates/mysql_virtual_alias_domain_maps.cf.j2 > /etc/postfix/sql/mysql_virtual_alias_domain_maps.cf
-    envsubst '\$EMAIL_DB_USER \$EMAIL_DB_PASSWORD \$EMAIL_DB_HOST \$EMAIL_DB_NAME' < /templates/mysql_virtual_alias_domain_mailbox_maps.cf.j2  > /etc/postfix/sql/mysql_virtual_alias_domain_mailbox_maps.cf
-    envsubst '\$EMAIL_DB_USER \$EMAIL_DB_PASSWORD \$EMAIL_DB_HOST \$EMAIL_DB_NAME' < /templates/mysql_virtual_mailbox_limit_maps.cf.j2         > /etc/postfix/sql/mysql_virtual_mailbox_limit_maps.cf
-    envsubst '\$EMAIL_DB_USER \$EMAIL_DB_PASSWORD \$EMAIL_DB_HOST \$EMAIL_DB_NAME' < /templates/mysql_virtual_alias_domain_catchall_maps.cf.j2 > /etc/postfix/sql/mysql_virtual_alias_domain_catchall_maps.cf
+    envsubst '\$EMAIL_DB_USER \$EMAIL_DB_PASSWORD \$EMAIL_DB_HOST \$EMAIL_DB_NAME' < /templates/sql_virtual_alias_maps.cf.j2        > /etc/postfix/sql/sql_virtual_alias_maps.cf
+    envsubst '\$EMAIL_DB_USER \$EMAIL_DB_PASSWORD \$EMAIL_DB_HOST \$EMAIL_DB_NAME' < /templates/sql_virtual_domains_maps.cf.j2      > /etc/postfix/sql/sql_virtual_domains_maps.cf
+    envsubst '\$EMAIL_DB_USER \$EMAIL_DB_PASSWORD \$EMAIL_DB_HOST \$EMAIL_DB_NAME' < /templates/sql_virtual_mailbox_maps.cf.j2      > /etc/postfix/sql/sql_virtual_mailbox_maps.cf
+    envsubst '\$EMAIL_DB_USER \$EMAIL_DB_PASSWORD \$EMAIL_DB_HOST \$EMAIL_DB_NAME' < /templates/sql_virtual_alias_domain_maps.cf.j2 > /etc/postfix/sql/sql_virtual_alias_domain_maps.cf
+    envsubst '\$EMAIL_DB_USER \$EMAIL_DB_PASSWORD \$EMAIL_DB_HOST \$EMAIL_DB_NAME' < /templates/sql_virtual_alias_domain_mailbox_maps.cf.j2  > /etc/postfix/sql/sql_virtual_alias_domain_mailbox_maps.cf
+    envsubst '\$EMAIL_DB_USER \$EMAIL_DB_PASSWORD \$EMAIL_DB_HOST \$EMAIL_DB_NAME' < /templates/sql_virtual_mailbox_limit_maps.cf.j2         > /etc/postfix/sql/sql_virtual_mailbox_limit_maps.cf
+    envsubst '\$EMAIL_DB_USER \$EMAIL_DB_PASSWORD \$EMAIL_DB_HOST \$EMAIL_DB_NAME' < /templates/sql_virtual_alias_domain_catchall_maps.cf.j2 > /etc/postfix/sql/sql_virtual_alias_domain_catchall_maps.cf
     
-    envsubst '\$EMAIL_DB_USER \$EMAIL_DB_PASSWORD \$EMAIL_DB_HOST \$EMAIL_DB_NAME' < /templates/dovecot-sql.conf.ext.j2 > /etc/dovecot/dovecot-sql.conf.ext
+    envsubst '\$EMAIL_DB_DRIVER \$EMAIL_DB_USER \$EMAIL_DB_PASSWORD \$EMAIL_DB_HOST \$EMAIL_DB_NAME' < /templates/dovecot-sql.conf.ext.j2 > /etc/dovecot/dovecot-sql.conf.ext
 }
 
 configuration_main_cf () {
@@ -37,9 +37,9 @@ configuration_main_cf () {
     postconf -e "smtpd_relay_restrictions = permit_mynetworks permit_sasl_authenticated defer_unauth_destination"
     postconf -e "smtpd_recipient_restrictions = permit_mynetworks permit_sasl_authenticated reject_non_fqdn_recipient reject_unauth_destination reject_unverified_recipient check_policy_service unix:private/policy-spf reject_unknown_client_hostname reject_invalid_helo_hostname reject_non_fqdn_helo_hostname reject_unknown_helo_hostname permit"
     postconf -e "virtual_transport = lmtp:unix:private/dovecot-lmtp"
-    postconf -e "virtual_mailbox_domains = proxy:mysql:/etc/postfix/sql/mysql_virtual_domains_maps.cf"
-    postconf -e "virtual_alias_maps = proxy:mysql:/etc/postfix/sql/mysql_virtual_alias_maps.cf, proxy:mysql:/etc/postfix/sql/mysql_virtual_alias_domain_maps.cf, proxy:mysql:/etc/postfix/sql/mysql_virtual_alias_domain_catchall_maps.cf"
-    postconf -e "virtual_mailbox_maps = proxy:mysql:/etc/postfix/sql/mysql_virtual_mailbox_maps.cf, proxy:mysql:/etc/postfix/sql/mysql_virtual_alias_domain_mailbox_maps.cf"
+    postconf -e "virtual_mailbox_domains = proxy:${EMAIL_DB_DRIVER}:/etc/postfix/sql/sql_virtual_domains_maps.cf"
+    postconf -e "virtual_alias_maps = proxy:${EMAIL_DB_DRIVER}:/etc/postfix/sql/sql_virtual_alias_maps.cf, proxy:${EMAIL_DB_DRIVER}:/etc/postfix/sql/sql_virtual_alias_domain_maps.cf, proxy:${EMAIL_DB_DRIVER}:/etc/postfix/sql/sql_virtual_alias_domain_catchall_maps.cf"
+    postconf -e "virtual_mailbox_maps = proxy:${EMAIL_DB_DRIVER}:/etc/postfix/sql/sql_virtual_mailbox_maps.cf, proxy:${EMAIL_DB_DRIVER}:/etc/postfix/sql/sql_virtual_alias_domain_mailbox_maps.cf"
 
     echo "milter_protocol = 2"                      >> /etc/postfix/main.cf
     echo "milter_default_action = accept"           >> /etc/postfix/main.cf
@@ -98,7 +98,7 @@ configure_relay () {
 # }
 
 #==================== Check env exists ============================
-if [[ -z "${EMAIL_DOMAINS}" || -z "${EMAIL_DB_USER}" || -z "${EMAIL_DB_PASSWORD}" || -z "${EMAIL_DB_HOST}" || -z "${EMAIL_DB_NAME}" || -z "${EMAIL_HOSTNAME}" || -z "${EMAIL_HELO_HOSTNAME}" ]]; then
+if [[ -z "${EMAIL_DOMAINS}"  || -z "${EMAIL_DB_DRIVER}" || -z "${EMAIL_DB_USER}" || -z "${EMAIL_DB_PASSWORD}" || -z "${EMAIL_DB_HOST}" || -z "${EMAIL_DB_NAME}" || -z "${EMAIL_HOSTNAME}" || -z "${EMAIL_HELO_HOSTNAME}" ]]; then
   echo "No one or more env"
   exit 0
 else

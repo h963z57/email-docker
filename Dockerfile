@@ -7,7 +7,9 @@ RUN apt-get update \
         apt-get install -y \
             inetutils-syslogd \
             postfix-mysql \
-            dovecot-mysql \ 
+            postfix-pgsql \
+            dovecot-mysql \
+            dovecot-pgsql \
             dovecot-imapd \
             dovecot-lmtpd \
             opendkim \

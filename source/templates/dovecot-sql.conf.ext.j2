@@ -1,4 +1,4 @@
-driver = mysql
+driver = ${EMAIL_DB_DRIVER}
 connect = host=${EMAIL_DB_HOST} dbname=${EMAIL_DB_NAME} user=${EMAIL_DB_USER} password=${EMAIL_DB_PASSWORD}
 default_pass_scheme = MD5-CRYPT
 password_query = SELECT username as user, password, '/var/vmail/%d/%n' as userdb_home, 'maildir:/var/vmail/%d/%n' as userdb_mail, 150 as userdb_uid, 8 as userdb_gid FROM mailbox WHERE username = '%u' AND active = '1'
