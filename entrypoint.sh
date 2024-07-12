@@ -22,7 +22,7 @@ configuration_main_cf () {
     postconf -e "myhostname = ${EMAIL_HOSTNAME}"
     postconf -e "mydestination = localhost"
     postconf -e "mynetworks = ${EMAIL_NETWORKS}" 
-    postconf -e "inet_protocols = ipv4"
+    postconf -e "inet_protocols = ipv4, ipv6"
     postconf -e "inet_interfaces = all"
     postconf -e "smtpd_tls_cert_file = /mnt/SSL/fullchain.pem" 
     postconf -e "smtpd_tls_key_file = /mnt/SSL/privkey.pem"
