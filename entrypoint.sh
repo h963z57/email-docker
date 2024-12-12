@@ -117,10 +117,7 @@ fi
 
 #=============== Check proxyprotocol availability =================
 if [[ -z "${EMAIL_PROXYPROTOCOL}" ]]; then
-  echo "EMAIL_PROXYPROTOCOL is not defined" 
-  export PROXYPROTOCOL_POSTFIX_OPTION     = "#-o smtpd_upstream_proxy_protocol=haproxy"
-  export PROXYPROTOCOL_DOVECOT_OPTION     = "#haproxy = yes"
-  export PROXYPROTOCOL_DOVECOT_PARAMKEY   = "#haproxy_trusted_networks = "
+  echo "EMAIL_PROXYPROTOCOL is not defined"
 else
   echo "EMAIL_PROXYPROTOCOL is defined"
   export PROXYPROTOCOL_POSTFIX_OPTION     = "-o smtpd_upstream_proxy_protocol=haproxy"
