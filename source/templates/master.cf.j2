@@ -10,6 +10,7 @@
 #               (yes)   (yes)   (no)    (never) (100)
 # ==========================================================================
 smtp inet n - y - - smtpd
+  ${PROXYPROTOCOL_POSTFIX_OPTION}
 #smtp inet n - y - 1 postscreen
 #smtpd pass - - y - - smtpd
 #dnsblog unix - - y - 0 dnsblog
@@ -27,8 +28,9 @@ submission inet n - y - - smtpd
   -o smtpd_client_restrictions=permit_sasl_authenticated,reject
   -o milter_macro_daemon_name=ORIGINATING
 smtps inet n - y - - smtpd
+  ${PROXYPROTOCOL_POSTFIX_OPTION}
   -o syslog_name=postfix/smtps
-# -o smtpd_tls_wrappermode=yes
+  -o smtpd_tls_wrappermode=yes
   -o smtpd_sasl_auth_enable=yes
 # -o smtpd_reject_unlisted_recipient=no
   -o smtpd_client_restrictions=permit_sasl_authenticated,reject

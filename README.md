@@ -18,6 +18,7 @@
         --evn EMAIL_RELAY_PORT=587 \
         --evn EMAIL_RELAY_ACCESS_KEY=ACCESS_KEY \
         --evn EMAIL_RELAY_SMTP_SECRET_KEY=SECRET_SMTP_KEY \
+        --env EMAIL_PROXYPROTOCOL="my_trusted_network_ipv6_ipv4" \
         h963z57/email-docker
 
 # docker-compose file
@@ -55,6 +56,7 @@
                 - EMAIL_RELAY_PORT=587
                 - EMAIL_RELAY_ACCESS_KEY=ACCESS_KEY
                 - EMAIL_RELAY_SMTP_SECRET_KEY=SECRET_SMTP_KEY
+                - EMAIL_PROXYPROTOCOL="my_trusted_network_ipv6_ipv4"
             links:
                 - "db"
             volumes:
@@ -94,6 +96,7 @@
                     - EMAIL_RELAY_PORT=587
                     - EMAIL_RELAY_ACCESS_KEY=ACCESS_KEY
                     - EMAIL_RELAY_SMTP_SECRET_KEY=SECRET_SMTP_KEY
+                    - EMAIL_PROXYPROTOCOL="my_trusted_network_ipv6_ipv4"
                 volumes:
                     - type: bind
                     source: /var/vmail

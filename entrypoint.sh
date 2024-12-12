@@ -14,6 +14,9 @@ generate_configs () {
     envsubst '\$EMAIL_DB_USER \$EMAIL_DB_PASSWORD \$EMAIL_DB_HOST \$EMAIL_DB_NAME' < /templates/sql_virtual_alias_domain_catchall_maps.cf.j2 > /etc/postfix/sql/sql_virtual_alias_domain_catchall_maps.cf
     
     envsubst '\$EMAIL_DB_DRIVER \$EMAIL_DB_USER \$EMAIL_DB_PASSWORD \$EMAIL_DB_HOST \$EMAIL_DB_NAME' < /templates/dovecot-sql.conf.ext.j2 > /etc/dovecot/dovecot-sql.conf.ext
+    
+    envsubst '\$PROXYPROTOCOL_POSTFIX_OPTION' < /templates/master.cf.j2 > /etc/postfix/master.cf
+    envsubst '\$PROXYPROTOCOL_DOVECOT_OPTION \$PROXYPROTOCOL_DOVECOT_PARAMKEY \$EMAIL_PROXYPROTOCOL' < /templates/10-master.conf.j2 > /etc/dovecot/conf.d/10-master.conf 
 }
 
 configuration_main_cf () {
@@ -112,11 +115,15 @@ else
   configure_relay
 fi
 
-# if [[ -z "${EMAIL_S3_ACCESS_KEY}" ]] || [[ -z "${EMAIL_S3_SECRET_KEY}" ]] || [[ -z "${EMAIL_S3_BUCKET_NAME}" ]] || [[ -z "${EMAIL_S3_BUCKET_ENDPOINT}" ]] ; then
-#   echo "S3 configuration skip"
-# else
-#   configure_s3
-# fi
+#=============== Check proxyprotocol availability =================
+if [[ -z "${EMAIL_PROXYPROTOCOL}" ]]; then
+  echo "EMAIL_PROXYPROTOCOL is not defined" 
+else
+  echo "EMAIL_PROXYPROTOCOL is defined"
+  export PROXYPROTOCOL_POSTFIX_OPTION     = "-o smtpd_upstream_proxy_protocol=haproxy"
+  export PROXYPROTOCOL_DOVECOT_OPTION     = "haproxy = yes"
+  export PROXYPROTOCOL_DOVECOT_PARAMKEY   = "haproxy_trusted_networks = "
+fi
 
 
 #================ Configure services ===================
