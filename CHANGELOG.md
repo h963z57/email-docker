@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.2.0-r2] - 12-Dec-2024
+## [1.2.0-r3] - 12-Dec-2024
 ### Added
 - Proxy protocol support
 ### Changed
