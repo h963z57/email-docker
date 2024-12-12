@@ -116,6 +116,7 @@ else
 fi
 
 #=============== Check proxyprotocol availability =================
+# export must be without spaces!!!
 if [[ -z "${EMAIL_PROXYPROTOCOL}" ]]; then
   echo "EMAIL_PROXYPROTOCOL is not defined"
   export PROXYPROTOCOL_POSTFIX_OPTION="#-o smtpd_upstream_proxy_protocol=haproxy"
