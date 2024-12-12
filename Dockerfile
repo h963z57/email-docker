@@ -33,7 +33,8 @@ RUN useradd -r -u 150 -g mail -d /var/vmail -s /sbin/nologin -c "Virtual Mail Us
 
 
 COPY /source/templates templates/
-COPY /source/files/master.cf /etc/postfix/master.cf
+# Transfer to template since v1.2.0
+# COPY /source/files/master.cf /etc/postfix/master.cf
 COPY /source/files/10-*.conf /etc/dovecot/conf.d/
 COPY /source/files/opendkim /etc/default/opendkim
 COPY /source/files/opendkim.conf /etc/opendkim.conf
