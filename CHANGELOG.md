@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.2.2] - 12-Dec-2024
+### Changed
+- Fix master.cf postfix
+
 ## [1.2.1] - 12-Dec-2024
 ### Changed
 - Minor fixes
