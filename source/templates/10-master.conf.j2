@@ -14,7 +14,7 @@
 # login user, so that login processes can't disturb other processes.
 #default_internal_user = dovecot
 
-${PROXYPROTOCOL_DOVECOT_PARAMKEY}${EMAIL_PROXYPROTOCOL}
+${PROXYPROTOCOL_DOVECOT_PARAMKEY} ${EMAIL_PROXYPROTOCOL}
 
 service imap-login {
   inet_listener imap {

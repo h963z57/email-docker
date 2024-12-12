@@ -122,7 +122,7 @@ else
   echo "EMAIL_PROXYPROTOCOL is defined"
   export PROXYPROTOCOL_POSTFIX_OPTION     = "-o smtpd_upstream_proxy_protocol=haproxy"
   export PROXYPROTOCOL_DOVECOT_OPTION     = "haproxy = yes"
-  export PROXYPROTOCOL_DOVECOT_PARAMKEY   = "haproxy_trusted_networks = "
+  export PROXYPROTOCOL_DOVECOT_PARAMKEY   = "haproxy_trusted_networks ="
 fi
 
 
