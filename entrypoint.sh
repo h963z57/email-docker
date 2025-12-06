@@ -44,41 +44,49 @@ configuration_main_cf () {
     postconf -e "virtual_alias_maps = proxy:${EMAIL_DB_DRIVER}:/etc/postfix/sql/sql_virtual_alias_maps.cf, proxy:${EMAIL_DB_DRIVER}:/etc/postfix/sql/sql_virtual_alias_domain_maps.cf, proxy:${EMAIL_DB_DRIVER}:/etc/postfix/sql/sql_virtual_alias_domain_catchall_maps.cf"
     postconf -e "virtual_mailbox_maps = proxy:${EMAIL_DB_DRIVER}:/etc/postfix/sql/sql_virtual_mailbox_maps.cf, proxy:${EMAIL_DB_DRIVER}:/etc/postfix/sql/sql_virtual_alias_domain_mailbox_maps.cf"
 
-    echo "milter_protocol = 2"                      >> /etc/postfix/main.cf
-    echo "milter_default_action = accept"           >> /etc/postfix/main.cf
-    echo "smtpd_milters = inet:localhost:12301"     >> /etc/postfix/main.cf
-    echo "non_smtpd_milters = inet:localhost:12301" >> /etc/postfix/main.cf
+#=== DISABLED BY 2 reasons
+# -- opendkim not supported by developers
+# -- use AWS SES
+    # echo "milter_protocol = 2"                      >> /etc/postfix/main.cf
+    # echo "milter_default_action = accept"           >> /etc/postfix/main.cf
+    # echo "smtpd_milters = inet:localhost:12301"     >> /etc/postfix/main.cf
+    # echo "non_smtpd_milters = inet:localhost:12301" >> /etc/postfix/main.cf
+# ===
 }
 
-generate_opendkim_key () {
-    echo "Start opendkim keygen..."
-    mkdir -p /etc/opendkim/keys/${EMAIL_DOMAIN}
-    opendkim-genkey -D /etc/opendkim/keys/${EMAIL_DOMAIN}/ --domain ${EMAIL_DOMAIN} --selector mail
-    echo "DKIM DNS entry:"
-    echo "========================================"
-    cat "/etc/opendkim/keys/${EMAIL_DOMAIN}/mail.txt"
-    echo "========================================"
-    echo "DKIM Secret:"
-    echo "========================================"
-    cat "/etc/opendkim/keys/${EMAIL_DOMAIN}/mail.private"
-    echo "========================================"
-    chown opendkim:opendkim /etc/opendkim/keys/${EMAIL_DOMAIN}/mail.private
-    chmod 600 /etc/opendkim/keys/${EMAIL_DOMAIN}/mail.private
-    echo "*.${EMAIL_DOMAIN}" >> /etc/opendkim/TrustedHosts
-    echo "mail._domainkey.${EMAIL_DOMAIN} ${EMAIL_DOMAIN}:mail:/etc/opendkim/keys/${EMAIL_DOMAIN}/mail.private" >> /etc/opendkim/KeyTable
-    echo "*@${EMAIL_DOMAIN} mail._domainkey.${EMAIL_DOMAIN}" >> /etc/opendkim/SigningTable
-}
+#=== DISABLED BY 2 reasons
+# -- opendkim not supported by developers
+# -- use AWS SES
+# generate_opendkim_key () {
+#     echo "Start opendkim keygen..."
+#     mkdir -p /etc/opendkim/keys/${EMAIL_DOMAIN}
+#     opendkim-genkey -D /etc/opendkim/keys/${EMAIL_DOMAIN}/ --domain ${EMAIL_DOMAIN} --selector mail
+#     echo "DKIM DNS entry:"
+#     echo "========================================"
+#     cat "/etc/opendkim/keys/${EMAIL_DOMAIN}/mail.txt"
+#     echo "========================================"
+#     echo "DKIM Secret:"
+#     echo "========================================"
+#     cat "/etc/opendkim/keys/${EMAIL_DOMAIN}/mail.private"
+#     echo "========================================"
+#     chown opendkim:opendkim /etc/opendkim/keys/${EMAIL_DOMAIN}/mail.private
+#     chmod 600 /etc/opendkim/keys/${EMAIL_DOMAIN}/mail.private
+#     echo "*.${EMAIL_DOMAIN}" >> /etc/opendkim/TrustedHosts
+#     echo "mail._domainkey.${EMAIL_DOMAIN} ${EMAIL_DOMAIN}:mail:/etc/opendkim/keys/${EMAIL_DOMAIN}/mail.private" >> /etc/opendkim/KeyTable
+#     echo "*@${EMAIL_DOMAIN} mail._domainkey.${EMAIL_DOMAIN}" >> /etc/opendkim/SigningTable
+# }
 
-copy_exists_opendkim_key () {
-    echo "Start opendkim attach"
-    mkdir -p /etc/opendkim/keys/${EMAIL_DOMAIN}
-    cp /run/secrets/${EMAIL_DOMAIN} /etc/opendkim/keys/${EMAIL_DOMAIN}/mail.private
-    chown opendkim:opendkim /etc/opendkim/keys/${EMAIL_DOMAIN}/mail.private
-    chmod 600 /etc/opendkim/keys/${EMAIL_DOMAIN}/mail.private
-    echo "*.${EMAIL_DOMAIN}" >> /etc/opendkim/TrustedHosts
-    echo "mail._domainkey.${EMAIL_DOMAIN} ${EMAIL_DOMAIN}:mail:/etc/opendkim/keys/${EMAIL_DOMAIN}/mail.private" >> /etc/opendkim/KeyTable
-    echo "*@${EMAIL_DOMAIN} mail._domainkey.${EMAIL_DOMAIN}" >> /etc/opendkim/SigningTable
-}
+# copy_exists_opendkim_key () {
+#     echo "Start opendkim attach"
+#     mkdir -p /etc/opendkim/keys/${EMAIL_DOMAIN}
+#     cp /run/secrets/${EMAIL_DOMAIN} /etc/opendkim/keys/${EMAIL_DOMAIN}/mail.private
+#     chown opendkim:opendkim /etc/opendkim/keys/${EMAIL_DOMAIN}/mail.private
+#     chmod 600 /etc/opendkim/keys/${EMAIL_DOMAIN}/mail.private
+#     echo "*.${EMAIL_DOMAIN}" >> /etc/opendkim/TrustedHosts
+#     echo "mail._domainkey.${EMAIL_DOMAIN} ${EMAIL_DOMAIN}:mail:/etc/opendkim/keys/${EMAIL_DOMAIN}/mail.private" >> /etc/opendkim/KeyTable
+#     echo "*@${EMAIL_DOMAIN} mail._domainkey.${EMAIL_DOMAIN}" >> /etc/opendkim/SigningTable
+# }
+# ===
 
 configure_relay () {
     echo "Start configuration relay smtp"
@@ -138,35 +146,47 @@ echo "Setup files priveleges"
 chown -R vmail:dovecot /etc/dovecot
 chmod -R o-rwx /etc/dovecot
 
-echo "Create conf files opendkim"
-touch /etc/opendkim/SigningTable
-touch /etc/opendkim/KeyTable
+#=== DISABLED BY 2 reasons
+# -- opendkim not supported by developers
+# -- use AWS SES
+# echo "Create conf files opendkim"
+# touch /etc/opendkim/SigningTable
+# touch /etc/opendkim/KeyTable
 
-#= Generate or import private opendkim key and configure sender access =
-for EMAIL_DOMAIN in $EMAIL_DOMAINS
-    do  
-        echo "Configure sender access for domain $EMAIL_DOMAIN"
-        echo "$EMAIL_DOMAIN REJECT Relay from $EMAIL_DOMAIN are denied" >> /etc/postfix/sender_access
-        if [ -f "/run/secrets/$EMAIL_DOMAIN" ]; then
-            echo "Success import exists private key for domain $EMAIL_DOMAIN"
-            copy_exists_opendkim_key
-        else 
-            echo "Success generate new key for domain $EMAIL_DOMAIN"
-            echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-            echo "#   DO NOT FORGET USE KEY AS SECRET      #"
-            echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-            generate_opendkim_key
-        fi
-     done
-
+# #= Generate or import private opendkim key and configure sender access =
+# for EMAIL_DOMAIN in $EMAIL_DOMAINS
+#     do  
+#         echo "Configure sender access for domain $EMAIL_DOMAIN"
+#         echo "$EMAIL_DOMAIN REJECT Relay from $EMAIL_DOMAIN are denied" >> /etc/postfix/sender_access
+#         if [ -f "/run/secrets/$EMAIL_DOMAIN" ]; then
+#             echo "Success import exists private key for domain $EMAIL_DOMAIN"
+#             copy_exists_opendkim_key
+#         else 
+#             echo "Success generate new key for domain $EMAIL_DOMAIN"
+#             echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+#             echo "#   DO NOT FORGET USE KEY AS SECRET      #"
+#             echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+#             generate_opendkim_key
+#         fi
+#      done
+# ===
 
 #===================== Start service ====================
 postmap /etc/postfix/sender_access
 service inetutils-syslogd start
-echo "Start postfix dovecot opendkim"
+#=== DISABLED BY 2 reasons
+# -- opendkim not supported by developers
+# -- use AWS SES
+# echo "Start postfix dovecot opendkim"
+# ===
+echo "Start postfix dovecot"
 service postfix start
 service dovecot start
-service opendkim start
+#=== DISABLED BY 2 reasons
+# -- opendkim not supported by developers
+# -- use AWS SES
+# service opendkim start
+# ===
 #====================== Enable log ======================
 touch /var/log/mail.err
 touch /var/log/mail.info
