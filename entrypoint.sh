@@ -17,7 +17,8 @@ generate_configs () {
     envsubst '\$EMAIL_DB_DRIVER \$EMAIL_DB_USER \$EMAIL_DB_PASSWORD \$EMAIL_DB_HOST \$EMAIL_DB_NAME' < /templates/auth-sql.conf.ext.j2 > /etc/dovecot/conf.d/auth-sql.conf.ext
 
     envsubst '\$PROXYPROTOCOL_POSTFIX_OPTION' < /templates/master.cf.j2 > /etc/postfix/master.cf
-    envsubst '\$PROXYPROTOCOL_DOVECOT_OPTION \$PROXYPROTOCOL_DOVECOT_PARAMKEY \$EMAIL_PROXYPROTOCOL' < /templates/10-master.conf.j2 > /etc/dovecot/conf.d/10-master.conf 
+    envsubst '\$PROXYPROTOCOL_DOVECOT_OPTION \$PROXYPROTOCOL_DOVECOT_PARAMKEY \$EMAIL_PROXYPROTOCOL' < /templates/10-master.conf.j2      > /etc/dovecot/conf.d/10-master.conf 
+    envsubst '\$PROXYPROTOCOL_DOVECOT_OPTION \$PROXYPROTOCOL_DOVECOT_PARAMKEY \$EMAIL_PROXYPROTOCOL' < /templates/20-managesieve.conf.j2 > /etc/dovecot/conf.d/20-managesieve.conf
 }
 
 configuration_main_cf () {

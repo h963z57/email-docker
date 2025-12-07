@@ -46,6 +46,7 @@ COPY /source/templates templates/
 # Transfer to template since v1.2.0
 # COPY /source/files/master.cf /etc/postfix/master.cf
 COPY /source/files/10-*.conf /etc/dovecot/conf.d/
+COPY /source/files/20-*.conf /etc/dovecot/conf.d/
 
 #=== DISABLED BY 2 reasons
 # -- opendkim not supported by developers
@@ -59,4 +60,4 @@ COPY ./entrypoint.sh /entrypoint.sh
 RUN chmod a+x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
-EXPOSE 25 143 587
+EXPOSE 25 143 587 4190
