@@ -12,17 +12,15 @@ passdb sql {
   passdb_default_password_scheme = MD5-CRYPT
   query = \
     SELECT username AS user, password \
-      local_part, \
     FROM mailbox \
-    WHERE '%{user}' IN (username, local_part) AND active = '1';
+    WHERE '%{user}' IN username AND active = '1';
 }
-
 
 userdb sql {
   query = \
     SELECT \
       local_part, \
-      '/var/vmail/%{user | domain}/%{user}' AS home, \
+      concat('/var/vmail/', maildir) AS home, \
       150 AS uid, \
       8 AS gid, \
       concat('dirsize:storage=', quota) AS quota_rule \
