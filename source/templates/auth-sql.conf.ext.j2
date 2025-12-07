@@ -11,9 +11,10 @@ pgsql ${EMAIL_DB_HOST} {
 passdb sql {
   passdb_default_password_scheme = MD5-CRYPT
   query = \
-    SELECT username AS user, password \
+    SELECT username AS user, password, \
+     local_part \
     FROM mailbox \
-    WHERE '%{user}' username AND active = '1';
+    WHERE '%{user}' IN (username, local_part) AND active = '1';
 }
 
 userdb sql {
