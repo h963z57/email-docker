@@ -1,6 +1,8 @@
 # Changelog
 
 ## [2.0.0] - 07-Dec-2025
+### NEED ACTION
+- migrate /var/vmail/user@domain/user@domain --> /var/vmail/domain/user/Maildir
 ### Added
 - Sieve
 - ManageSieve
