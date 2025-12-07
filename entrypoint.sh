@@ -12,9 +12,10 @@ generate_configs () {
     envsubst '\$EMAIL_DB_USER \$EMAIL_DB_PASSWORD \$EMAIL_DB_HOST \$EMAIL_DB_NAME' < /templates/sql_virtual_alias_domain_mailbox_maps.cf.j2  > /etc/postfix/sql/sql_virtual_alias_domain_mailbox_maps.cf
     envsubst '\$EMAIL_DB_USER \$EMAIL_DB_PASSWORD \$EMAIL_DB_HOST \$EMAIL_DB_NAME' < /templates/sql_virtual_mailbox_limit_maps.cf.j2         > /etc/postfix/sql/sql_virtual_mailbox_limit_maps.cf
     envsubst '\$EMAIL_DB_USER \$EMAIL_DB_PASSWORD \$EMAIL_DB_HOST \$EMAIL_DB_NAME' < /templates/sql_virtual_alias_domain_catchall_maps.cf.j2 > /etc/postfix/sql/sql_virtual_alias_domain_catchall_maps.cf
-    
-    envsubst '\$EMAIL_DB_DRIVER \$EMAIL_DB_USER \$EMAIL_DB_PASSWORD \$EMAIL_DB_HOST \$EMAIL_DB_NAME' < /templates/dovecot-sql.conf.ext.j2 > /etc/dovecot/dovecot-sql.conf.ext
-    
+    # old version
+    # envsubst '\$EMAIL_DB_DRIVER \$EMAIL_DB_USER \$EMAIL_DB_PASSWORD \$EMAIL_DB_HOST \$EMAIL_DB_NAME' < /templates/dovecot-sql.conf.ext.j2 > /etc/dovecot/dovecot-sql.conf.ext    
+    envsubst '\$EMAIL_DB_DRIVER \$EMAIL_DB_USER \$EMAIL_DB_PASSWORD \$EMAIL_DB_HOST \$EMAIL_DB_NAME' < /templates/auth-sql.conf.ext.j2 > /etc/dovecot/conf.d/auth-sql.conf.ext
+
     envsubst '\$PROXYPROTOCOL_POSTFIX_OPTION' < /templates/master.cf.j2 > /etc/postfix/master.cf
     envsubst '\$PROXYPROTOCOL_DOVECOT_OPTION \$PROXYPROTOCOL_DOVECOT_PARAMKEY \$EMAIL_PROXYPROTOCOL' < /templates/10-master.conf.j2 > /etc/dovecot/conf.d/10-master.conf 
 }

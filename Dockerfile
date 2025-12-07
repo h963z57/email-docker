@@ -12,6 +12,8 @@ RUN apt-get update \
             dovecot-pgsql \
             dovecot-imapd \
             dovecot-lmtpd \
+            dovecot-sieve \
+            dovecot-managesieved \
 #=== DISABLED BY 2 reasons
 # -- opendkim not supported by developers
 # -- use AWS SES   

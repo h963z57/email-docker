@@ -1,6 +1,11 @@
 # Changelog
 
-## [2.0.0] - 06-Dec-2025
+## [2.0.0] - 07-Dec-2025
+### Added
+- Sieve
+- ManageSieve
+### Changed
+- update version to 2.4+
 ### Disabled
 - opendkim
 
