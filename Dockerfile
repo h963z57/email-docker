@@ -14,12 +14,8 @@ RUN apt-get update \
             dovecot-lmtpd \
             dovecot-sieve \
             dovecot-managesieved \
-#=== DISABLED BY 2 reasons
-# -- opendkim not supported by developers
-# -- use AWS SES   
-            # opendkim \
-            # opendkim-tools \
-# ===
+            opendkim \
+            opendkim-tools \
             wget \
             gettext-base \
             postfix-policyd-spf-python
@@ -32,13 +28,9 @@ RUN useradd -r -u 150 -g mail -d /var/vmail -s /sbin/nologin -c "Virtual Mail Us
     && chown -R vmail:mail /var/vmail \
     && mkdir -p /mnt/SSL/ \
     && mkdir -p /etc/postfix/sql \
-#=== DISABLED BY 2 reasons
-# -- opendkim not supported by developers
-# -- use AWS SES    
-    # && mkdir -p /etc/opendkim/keys \
-    # && chown opendkim:opendkim /etc/opendkim \
-    # && chmod 750 /etc/opendkim \
-# ===
+    && mkdir -p /etc/opendkim/keys \
+    && chown opendkim:opendkim /etc/opendkim \
+    && chmod 750 /etc/opendkim \
     && touch /etc/postfix/sender_access
 
 
@@ -47,14 +39,9 @@ COPY /source/templates templates/
 # COPY /source/files/master.cf /etc/postfix/master.cf
 COPY /source/files/10-*.conf /etc/dovecot/conf.d/
 COPY /source/files/20-*.conf /etc/dovecot/conf.d/
-
-#=== DISABLED BY 2 reasons
-# -- opendkim not supported by developers
-# -- use AWS SES
-# COPY /source/files/opendkim /etc/default/opendkim
-# COPY /source/files/opendkim.conf /etc/opendkim.conf
-# COPY /source/files/TrustedHosts /etc/opendkim/TrustedHosts
-# === 
+COPY /source/files/opendkim /etc/default/opendkim
+COPY /source/files/opendkim.conf /etc/opendkim.conf
+COPY /source/files/TrustedHosts /etc/opendkim/TrustedHosts
 
 COPY ./entrypoint.sh /entrypoint.sh
 RUN chmod a+x /entrypoint.sh

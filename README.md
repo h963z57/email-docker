@@ -2,7 +2,7 @@
 
 > Don't forget create and configure database for postfixadmin befor use this container.
 
-# For run container ~(for create DKIM)~
+# For run container (for create DKIM)
 
         docker run -d -p 143:143 -p 25:25 -p 587:587 \
         --env EMAIL_DB_DRIVER=pgsql \ #mysql
@@ -19,6 +19,7 @@
         --evn EMAIL_RELAY_ACCESS_KEY=ACCESS_KEY \
         --evn EMAIL_RELAY_SMTP_SECRET_KEY=SECRET_SMTP_KEY \
         --env EMAIL_PROXYPROTOCOL="my_trusted_network_ipv6_ipv4" \
+        # --env EMAIL_DKIM_OPER_MODE=v \ #sv s sign v validate
         h963z57/email-docker
 
 # docker-compose file

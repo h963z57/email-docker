@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.2.0] - 09-Dec-2025
+### Changed
+- openDKIM by default use as validate.
+
 ## [2.1.0] - 07-Dec-2025
 ### Changed
 - configured Sieve + ManageSieve
