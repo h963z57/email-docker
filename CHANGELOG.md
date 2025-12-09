@@ -3,6 +3,9 @@
 ## [2.2.0] - 09-Dec-2025
 ### Changed
 - openDKIM by default use as validate.
+- milter_protocol to 6
+### Disabled
+- old parameter smtp_use_tls
 
 ## [2.1.0] - 07-Dec-2025
 ### Changed

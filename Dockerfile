@@ -40,7 +40,8 @@ COPY /source/templates templates/
 COPY /source/files/10-*.conf /etc/dovecot/conf.d/
 COPY /source/files/20-*.conf /etc/dovecot/conf.d/
 COPY /source/files/opendkim /etc/default/opendkim
-COPY /source/files/opendkim.conf /etc/opendkim.conf
+# Now use as template
+# COPY /source/files/opendkim.conf /etc/opendkim.conf
 COPY /source/files/TrustedHosts /etc/opendkim/TrustedHosts
 
 COPY ./entrypoint.sh /entrypoint.sh

@@ -15,6 +15,8 @@ generate_configs () {
     # old version
     # envsubst '\$EMAIL_DB_DRIVER \$EMAIL_DB_USER \$EMAIL_DB_PASSWORD \$EMAIL_DB_HOST \$EMAIL_DB_NAME' < /templates/dovecot-sql.conf.ext.j2 > /etc/dovecot/dovecot-sql.conf.ext    
     envsubst '\$EMAIL_DB_DRIVER \$EMAIL_DB_USER \$EMAIL_DB_PASSWORD \$EMAIL_DB_HOST \$EMAIL_DB_NAME' < /templates/auth-sql.conf.ext.j2 > /etc/dovecot/conf.d/auth-sql.conf.ext
+
+    envsubst '\$EMAIL_DKIM_OPER_MODE' < /templates/opendkim.conf.j2 > /etc/opendkim.conf
     
     envsubst '\$PROXYPROTOCOL_POSTFIX_OPTION' < /templates/master.cf.j2 > /etc/postfix/master.cf
     envsubst '\$PROXYPROTOCOL_DOVECOT_OPTION \$PROXYPROTOCOL_DOVECOT_PARAMKEY \$EMAIL_PROXYPROTOCOL' < /templates/10-master.conf.j2      > /etc/dovecot/conf.d/10-master.conf 
@@ -46,7 +48,7 @@ configuration_main_cf () {
     postconf -e "virtual_alias_maps = proxy:${EMAIL_DB_DRIVER}:/etc/postfix/sql/sql_virtual_alias_maps.cf, proxy:${EMAIL_DB_DRIVER}:/etc/postfix/sql/sql_virtual_alias_domain_maps.cf, proxy:${EMAIL_DB_DRIVER}:/etc/postfix/sql/sql_virtual_alias_domain_catchall_maps.cf"
     postconf -e "virtual_mailbox_maps = proxy:${EMAIL_DB_DRIVER}:/etc/postfix/sql/sql_virtual_mailbox_maps.cf, proxy:${EMAIL_DB_DRIVER}:/etc/postfix/sql/sql_virtual_alias_domain_mailbox_maps.cf"
 
-    echo "milter_protocol = 2"                      >> /etc/postfix/main.cf
+    echo "milter_protocol = 6"                      >> /etc/postfix/main.cf
     echo "milter_default_action = accept"           >> /etc/postfix/main.cf
     echo "smtpd_milters = inet:localhost:12301"     >> /etc/postfix/main.cf
     echo "non_smtpd_milters = inet:localhost:12301" >> /etc/postfix/main.cf
@@ -88,7 +90,8 @@ configure_relay () {
     postconf -e "smtp_sasl_auth_enable = yes"
     postconf -e "smtp_sasl_security_options = noanonymous"
     postconf -e "smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd"
-    postconf -e "smtp_use_tls = yes"
+    # Depricated
+    # postconf -e "smtp_use_tls = yes"
     postconf -e "smtp_tls_security_level = encrypt"
     postconf -e "smtp_tls_note_starttls_offer = yes"
 
