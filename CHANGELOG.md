@@ -1,6 +1,8 @@
 # Changelog
 
 ## [2.2.0] - 09-Dec-2025
+### NEED ACTION
+- add EMAIL_DKIM_OPER_MODE = v OR s OR sv (s - sign / v - validate)
 ### Changed
 - openDKIM by default use as validate.
 - milter_protocol to 6
